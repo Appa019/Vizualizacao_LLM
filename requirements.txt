@@ -1,7 +1,4 @@
-streamlit
-numpy
-matplotlib
-seaborn
-scipy
-pandas
-openai
+# Dependências do backend — instale com:
+#   pip install -r backend/requirements.txt
+# Este arquivo redireciona para o backend.
+-r backend/requirements.txt
