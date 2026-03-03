@@ -12,7 +12,6 @@ import Training from './pages/Training'
 import Inference from './pages/Inference'
 import FineTuning from './pages/FineTuning'
 import Lab from './pages/Lab'
-import Setup from './pages/Setup'
 
 // ─── App raiz com roteamento ──────────────────────────────────────────────────
 
@@ -30,7 +29,6 @@ export default function App() {
         <Route path="/inference" element={<Inference />} />
         <Route path="/fine-tuning" element={<FineTuning />} />
         <Route path="/lab" element={<Lab />} />
-        <Route path="/setup" element={<Setup />} />
       </Route>
     </Routes>
   )

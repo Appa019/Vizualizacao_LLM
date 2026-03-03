@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext } from 'react-router-dom'
 import { Flask, PaperPlaneTilt, SpinnerGap, Sparkle, Eye, BracketsCurly, Waveform, ArrowCounterClockwise } from '@phosphor-icons/react'
 import {
   useTokenize,
   useGenerate,
-  useAvailableModels,
   useSelfAttention,
   useEmbeddingSpace,
-  useRealAttention,
-  useSetupStatus,
 } from '../api/hooks'
-import type { LayoutContext } from '../components/layout/Layout'
 import EmbeddingSpace from '../components/viz/EmbeddingSpace'
 import Heatmap3D from '../components/viz/Heatmap3D'
 import ApiLoadingState from '../components/education/ApiLoadingState'
@@ -53,7 +48,6 @@ const embeddingTestWords = [
 const attentionTestTokens = ['O', 'gato', 'sentou', 'no', 'tapete', 'macio']
 
 export default function Lab() {
-  const { modoSimulacao } = useOutletContext<LayoutContext>()
   const [activeTab, setActiveTab] = useState<TabId>('tokenizacao')
 
   // ── Tokenization state ──
@@ -81,9 +75,6 @@ export default function Lab() {
     })
   }
 
-  // ── Models ──
-  const modelsApi = useAvailableModels()
-
   // ── Embeddings state ──
   const embeddingApi = useEmbeddingSpace()
   const [embeddingsLoaded, setEmbeddingsLoaded] = useState(false)
@@ -104,29 +95,19 @@ export default function Lab() {
   // ── Attention state ──
   const attentionApi = useSelfAttention()
   const [attentionLoaded, setAttentionLoaded] = useState(false)
-  const realAttnApi = useRealAttention()
-  const { data: setupStatus } = useSetupStatus()
-
-  const modeloCarregado = setupStatus?.modelo_carregado === true
-  const modeloNome = setupStatus?.modelo_nome ?? ''
-  const usandoReal = !modoSimulacao && modeloCarregado
 
   useEffect(() => {
     if (activeTab === 'atencao' && !attentionLoaded) {
-      if (usandoReal) {
-        realAttnApi.execute({ nome_modelo: modeloNome, texto: attentionTestTokens.join(' ') })
-      } else {
-        attentionApi.execute({ tokens: attentionTestTokens })
-      }
+      attentionApi.execute({ tokens: attentionTestTokens })
       setAttentionLoaded(true)
     }
-  }, [activeTab, usandoReal]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTab]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (attentionApi.error || realAttnApi.error) {
+    if (attentionApi.error) {
       setAttentionLoaded(false)
     }
-  }, [attentionApi.error, realAttnApi.error])
+  }, [attentionApi.error])
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 space-y-10 animate-slide-up">
@@ -144,30 +125,6 @@ export default function Lab() {
           explore embeddings, visualize atencao e interaja diretamente com o
           modelo via API.
         </p>
-      </section>
-
-      {/* Model status */}
-      <section className="glass-card p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded border border-gray-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-              Backend API
-            </span>
-            {modelsApi.data && (
-              <span className="text-xs text-gray-500">
-                {modelsApi.data.modelos?.length ?? 0} modelos
-                disponiveis
-              </span>
-            )}
-          </div>
-          <a
-            href="/setup"
-            className="text-xs text-teal-400 hover:text-teal-300 transition-colors"
-          >
-            Configurar modelos →
-          </a>
-        </div>
       </section>
 
       {/* Tabs */}
@@ -409,82 +366,45 @@ export default function Lab() {
 
       {activeTab === 'atencao' && (
         <section className="glass-card p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-800">
-              Experimento: Mapa de Atencao
-            </h3>
-            <span className="flex items-center gap-1.5 text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-sm border border-gray-200">
-              <span className={`w-1.5 h-1.5 rounded-full ${usandoReal ? 'bg-green-400' : 'bg-blue-400'}`} />
-              {usandoReal ? `Modelo Real - ${modeloNome}` : 'Simulacao'}
-            </span>
-          </div>
+          <h3 className="text-sm font-semibold text-gray-800">
+            Experimento: Mapa de Atencao
+          </h3>
           <p className="text-xs text-gray-500">
             Visualize os pesos de self-attention entre tokens. Cores mais
             intensas indicam que o modelo "presta mais atencao" entre aquele par
             de tokens.
           </p>
 
-          {usandoReal ? (
-            <ApiLoadingState
-              loading={realAttnApi.loading}
-              error={realAttnApi.error}
-              compact
-              loadingMessage="Obtendo pesos de atencao do modelo real..."
-              fallback={
-                <div className="py-8 text-center text-xs text-gray-500">
-                  Inicie o backend para visualizar o mapa de atencao.
-                </div>
-              }
-            >
-              {realAttnApi.data && realAttnApi.data.camadas?.[0] && (
-                <Heatmap3D
-                  matrix={realAttnApi.data.camadas[0].media_cabecas}
-                  xLabels={realAttnApi.data.tokens}
-                  yLabels={realAttnApi.data.tokens}
-                  title={`Atencao Real - Camada 1 (media das cabecas)`}
-                  colorscale="YlOrRd"
-                  height={400}
-                  mode="2d"
-                  showValues
-                />
-              )}
-            </ApiLoadingState>
-          ) : (
-            <ApiLoadingState
-              loading={attentionApi.loading}
-              error={attentionApi.error}
-              compact
-              loadingMessage="Calculando pesos de atencao..."
-              fallback={
-                <div className="py-8 text-center text-xs text-gray-500">
-                  Inicie o backend para visualizar o mapa de atencao.
-                </div>
-              }
-            >
-              {attentionApi.data && attentionApi.data.pesos_atencao && (
-                <Heatmap3D
-                  matrix={attentionApi.data.pesos_atencao.slice(0, attentionApi.data.num_tokens_reais).map(row => row.slice(0, attentionApi.data!.num_tokens_reais))}
-                  xLabels={attentionTestTokens}
-                  yLabels={attentionTestTokens}
-                  title="Self-Attention Weights"
-                  colorscale="YlOrRd"
-                  height={400}
-                  mode="2d"
-                  showValues
-                />
-              )}
-            </ApiLoadingState>
-          )}
+          <ApiLoadingState
+            loading={attentionApi.loading}
+            error={attentionApi.error}
+            compact
+            loadingMessage="Calculando pesos de atencao..."
+            fallback={
+              <div className="py-8 text-center text-xs text-gray-500">
+                Inicie o backend para visualizar o mapa de atencao.
+              </div>
+            }
+          >
+            {attentionApi.data && attentionApi.data.pesos_atencao && (
+              <Heatmap3D
+                matrix={attentionApi.data.pesos_atencao.slice(0, attentionApi.data.num_tokens_reais).map(row => row.slice(0, attentionApi.data!.num_tokens_reais))}
+                xLabels={attentionTestTokens}
+                yLabels={attentionTestTokens}
+                title="Self-Attention Weights"
+                colorscale="YlOrRd"
+                height={400}
+                mode="2d"
+                showValues
+              />
+            )}
+          </ApiLoadingState>
 
-          {(attentionApi.error || realAttnApi.error) && (
+          {attentionApi.error && (
             <button
               onClick={() => {
                 setAttentionLoaded(false)
-                if (usandoReal) {
-                  realAttnApi.execute({ nome_modelo: modeloNome, texto: attentionTestTokens.join(' ') })
-                } else {
-                  attentionApi.execute({ tokens: attentionTestTokens })
-                }
+                attentionApi.execute({ tokens: attentionTestTokens })
                 setAttentionLoaded(true)
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-sm bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
@@ -495,7 +415,7 @@ export default function Lab() {
           )}
 
           <div className="flex flex-wrap gap-1.5">
-            {(usandoReal && realAttnApi.data ? realAttnApi.data.tokens : attentionTestTokens).map((t, i) => (
+            {attentionTestTokens.map((t, i) => (
               <span
                 key={i}
                 className="px-2 py-0.5 rounded text-[11px] font-mono bg-query/10 border border-query/30 text-query"

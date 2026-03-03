@@ -13,7 +13,6 @@ import {
   CaretLeft,
   CaretRight,
   BookOpenText,
-  GearSix,
 } from '@phosphor-icons/react'
 import type { Icon } from '@phosphor-icons/react'
 
@@ -28,13 +27,6 @@ interface Modulo {
 }
 
 const modulos: Modulo[] = [
-  {
-    numero: 0,
-    caminho: '/setup',
-    rotulo: 'Configurar',
-    icone: GearSix,
-    descricao: 'Configurar modelo local',
-  },
   {
     numero: 1,
     caminho: '/',

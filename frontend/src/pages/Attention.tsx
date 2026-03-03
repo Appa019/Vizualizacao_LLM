@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext, Link } from 'react-router-dom'
-import { Eye, Warning } from '@phosphor-icons/react'
+import { Eye } from '@phosphor-icons/react'
 import {
   useSelfAttention,
   useMultiHeadAttention,
   useAttentionFlow,
   useTokenImportance,
   useTokenize,
-  useRealAttention,
-  useSetupStatus,
 } from '../api/hooks'
-import type { LayoutContext } from '../components/layout/Layout'
 import Heatmap3D from '../components/viz/Heatmap3D'
 import AttentionFlow from '../components/viz/AttentionFlow'
 import StepByStep from '../components/education/StepByStep'
@@ -46,26 +42,17 @@ const attentionVars = [
 // ─── Componente principal ───────────────────────────────────────────────────
 
 export default function Attention() {
-  const { modoSimulacao } = useOutletContext<LayoutContext>()
   const [inputText, setInputText] = useState('O gato pulou no jardim')
   const [tokens, setTokens] = useState<string[]>(FALLBACK_TOKENS)
   const [tokenSelecionado, setTokenSelecionado] = useState(0)
   const [modo3D, setModo3D] = useState(false)
   const [numCabecas, setNumCabecas] = useState(4)
-  const [camadaSelecionada, setCamadaSelecionada] = useState(1)
-  const [totalCamadasReal, setTotalCamadasReal] = useState(1)
 
   const tokenizer = useTokenize()
   const selfAttn = useSelfAttention()
   const multiHead = useMultiHeadAttention()
   const flow = useAttentionFlow()
   const importance = useTokenImportance()
-  const realAttn = useRealAttention()
-  const { data: setupStatus } = useSetupStatus()
-
-  const modeloCarregado = setupStatus?.modelo_carregado === true
-  const modeloNome = setupStatus?.modelo_nome ?? ''
-  const usandoReal = !modoSimulacao && modeloCarregado
 
   // Tokenizar e buscar dados ao mudar o texto
   useEffect(() => {
@@ -84,27 +71,6 @@ export default function Attention() {
     }
   }, [tokenizer.data])
 
-  // Fetch real attention when in real mode or text changes
-  useEffect(() => {
-    if (usandoReal && inputText.trim()) {
-      realAttn.execute({ nome_modelo: modeloNome, texto: inputText, camada: camadaSelecionada })
-    }
-  }, [usandoReal, inputText, modeloNome])
-
-  // Track total layers from model info
-  useEffect(() => {
-    if (setupStatus?.modelo_info) {
-      setTotalCamadasReal(setupStatus.modelo_info.num_camadas)
-    }
-  }, [setupStatus])
-
-  // Re-fetch real attention when layer changes
-  useEffect(() => {
-    if (usandoReal && inputText.trim()) {
-      realAttn.execute({ nome_modelo: modeloNome, texto: inputText, camada: camadaSelecionada })
-    }
-  }, [camadaSelecionada])
-
   // Re-fetch flow ao mudar token selecionado
   useEffect(() => {
     if (tokens.length > 0) {
@@ -119,21 +85,14 @@ export default function Attention() {
     }
   }, [numCabecas])
 
-  // Dados para exibicao - switch between simulation and real
-  const realData = realAttn.data
-  const realCamada = realData?.camadas?.[0]
-
+  // Dados para exibicao
   const attnData = selfAttn.data
-  const displayTokens = usandoReal && realData
-    ? realData.tokens
-    : attnData
-      ? attnData.tokens.slice(0, attnData.num_tokens_reais)
-      : tokens
-  const displayPesos = usandoReal && realCamada
-    ? realCamada.media_cabecas
-    : attnData
-      ? attnData.pesos_atencao.slice(0, attnData.num_tokens_reais).map((r) => r.slice(0, attnData.num_tokens_reais))
-      : FALLBACK_PESOS
+  const displayTokens = attnData
+    ? attnData.tokens.slice(0, attnData.num_tokens_reais)
+    : tokens
+  const displayPesos = attnData
+    ? attnData.pesos_atencao.slice(0, attnData.num_tokens_reais).map((r) => r.slice(0, attnData.num_tokens_reais))
+    : FALLBACK_PESOS
 
   // StepByStep passos
   const steps = attnData
@@ -170,28 +129,6 @@ export default function Attention() {
         </p>
       </section>
 
-      {/* Warning banner when real model selected but not loaded */}
-      {!modoSimulacao && !modeloCarregado && (
-        <section className="flex items-center gap-3 p-4 rounded-sm bg-amber-50 border border-amber-200">
-          <Warning size={18} weight="fill" className="text-amber-500 flex-shrink-0" />
-          <p className="text-sm text-amber-700">
-            Modo "Modelo Real" selecionado, mas nenhum modelo esta carregado.{' '}
-            <Link to="/setup" className="underline font-medium hover:text-amber-800">
-              Configure um modelo no Setup
-            </Link>{' '}
-            ou volte para "Simulacao".
-          </p>
-        </section>
-      )}
-
-      {/* Data source label */}
-      {usandoReal && (
-        <section className="flex items-center gap-2 text-xs text-gray-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-          Modelo Real - {modeloNome}
-        </section>
-      )}
-
       {/* Input de texto */}
       <section className="glass-card p-5">
         <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -220,20 +157,6 @@ export default function Attention() {
           ))}
         </div>
 
-        {/* Layer selector for real model */}
-        {usandoReal && totalCamadasReal > 1 && (
-          <div className="mt-4">
-            <Slider
-              value={camadaSelecionada}
-              onChange={setCamadaSelecionada}
-              min={1}
-              max={totalCamadasReal}
-              step={1}
-              label="Camada do modelo"
-              unit={`/ ${totalCamadasReal}`}
-            />
-          </div>
-        )}
       </section>
 
       {/* StepByStep */}

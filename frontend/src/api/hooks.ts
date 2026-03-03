@@ -17,13 +17,6 @@ import apiClient, {
   type InferenceResponse,
   type TemperatureDemoResponse,
   type SamplingDemoResponse,
-  type ListarModelosResponse,
-  type CarregarModeloResponse,
-  type RealAttentionResponse,
-  type HardwareInfo,
-  type SetupStatusResponse,
-  type AutoConfigureResponse,
-  type SetupHealthResponse,
 } from './client'
 
 // ─── Hook genérico de API ───────────────────────────────────────────────────
@@ -336,62 +329,3 @@ export function useSamplingDemo() {
   })
 }
 
-// ─── Models ─────────────────────────────────────────────────────────────────
-
-export function useAvailableModels() {
-  return useApiFetch<ListarModelosResponse>('/api/models/available-models')
-}
-
-export function useLoadModel() {
-  return useApiCall<CarregarModeloResponse, { nome_modelo: string }>(
-    async (params) => {
-      const res = await apiClient.post<CarregarModeloResponse>(
-        '/api/models/load-model',
-        params
-      )
-      return res.data
-    },
-    0
-  )
-}
-
-export function useRealAttention() {
-  return useApiCall<
-    RealAttentionResponse,
-    { nome_modelo: string; texto: string; camada?: number }
-  >(async (params) => {
-    const res = await apiClient.post<RealAttentionResponse>(
-      '/api/models/real-attention',
-      params
-    )
-    return res.data
-  })
-}
-
-// ─── Setup ──────────────────────────────────────────────────────────────────
-
-export function useHardwareInfo() {
-  return useApiFetch<HardwareInfo>('/api/setup/hardware')
-}
-
-export function useSetupStatus() {
-  return useApiFetch<SetupStatusResponse>('/api/setup/status')
-}
-
-export function useAutoConfig() {
-  return useApiCall<AutoConfigureResponse, void>(
-    async () => {
-      const res = await apiClient.post<AutoConfigureResponse>(
-        '/api/setup/auto-configure',
-        undefined,
-        { timeout: 300_000 }
-      )
-      return res.data
-    },
-    0
-  )
-}
-
-export function useSetupHealth() {
-  return useApiFetch<SetupHealthResponse>('/api/setup/health')
-}

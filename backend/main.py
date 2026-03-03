@@ -18,8 +18,6 @@ from routers import (
     attention,
     embeddings,
     inference,
-    models,
-    setup,
     tokenization,
     training,
 )
@@ -72,8 +70,6 @@ app.include_router(embeddings.router, prefix=API_PREFIX)
 app.include_router(attention.router, prefix=API_PREFIX)
 app.include_router(training.router, prefix=API_PREFIX)
 app.include_router(inference.router, prefix=API_PREFIX)
-app.include_router(models.router, prefix=API_PREFIX)
-app.include_router(setup.router, prefix=API_PREFIX)
 
 # ---------------------------------------------------------------------------
 # Endpoint raiz

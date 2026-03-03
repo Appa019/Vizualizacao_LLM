@@ -25,15 +25,3 @@ def fresh_training_state():
     training_mod._rede_global = None
     yield
     training_mod._rede_global = None
-
-
-@pytest.fixture
-def reset_model_manager():
-    """Reset the model manager singleton cache before and after each test."""
-    from core.model_manager import get_model_manager
-    mgr = get_model_manager()
-    mgr._cache.clear()
-    mgr._tokenizadores.clear()
-    yield
-    mgr._cache.clear()
-    mgr._tokenizadores.clear()
