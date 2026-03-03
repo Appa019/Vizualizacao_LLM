@@ -30,6 +30,3 @@ htmlcov/
 
 # Worktrees
 .worktrees/
-
-# Misc
-CLAUDE.md
