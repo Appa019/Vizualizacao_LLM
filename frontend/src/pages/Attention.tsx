@@ -23,6 +23,7 @@ import Toggle from '../components/ui/Toggle'
 import ApiLoadingState from '../components/education/ApiLoadingState'
 import PlotlyChart from '../components/viz/PlotlyChart'
 import AttentionWeights3D from '../components/viz/AttentionWeights3D'
+import TokenImportanceDashboard from '../components/viz/TokenImportanceDashboard'
 
 // ─── Dados fallback quando o backend esta offline ────────────────────────────
 
@@ -449,42 +450,7 @@ export default function Attention() {
         icon={<Eye size={18} weight="duotone" />}
         caption="Metricas de quanto cada token e importante na sequencia - baseado nos pesos de atencao."
       >
-        <ApiLoadingState
-          loading={importance.loading}
-          error={importance.error}
-        >
-          {importance.data && (
-            <div className="space-y-4">
-              <PlotlyChart
-                data={[
-                  {
-                    type: 'bar',
-                    x: importance.data.importancia_combinada,
-                    y: importance.data.tokens,
-                    orientation: 'h',
-                    marker: {
-                      color: importance.data.importancia_combinada.map((v, i) =>
-                        importance.data!.tokens[i] === importance.data!.token_mais_importante
-                          ? '#ef4444'
-                          : '#3b82f6'
-                      ),
-                    },
-                    hovertemplate: '%{y}: %{x:.3f}<extra></extra>',
-                  } as Plotly.Data,
-                ]}
-                layout={{
-                  title: { text: 'Importancia Combinada', font: { color: '#374151', size: 13 } },
-                  yaxis: { autorange: 'reversed' as const },
-                  margin: { l: 80, r: 20, t: 40, b: 30 },
-                }}
-                height={Math.max(200, importance.data.tokens.length * 35)}
-              />
-              <p className="text-xs text-gray-500">
-                {importance.data.explicacao}
-              </p>
-            </div>
-          )}
-        </ApiLoadingState>
+        <TokenImportanceDashboard tokens={displayTokens} d_model={64} />
       </EducationalViz>
 
       {/* Por que importa */}

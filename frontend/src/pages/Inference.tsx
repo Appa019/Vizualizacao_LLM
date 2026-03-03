@@ -13,6 +13,7 @@ import EducationalViz from '../components/education/EducationalViz'
 import Slider from '../components/ui/Slider'
 import ApiLoadingState from '../components/education/ApiLoadingState'
 import InferencePipeline3D from '../components/viz/InferencePipeline3D'
+import SamplingComparison from '../components/viz/SamplingComparison'
 
 // ─── Dados fallback quando o backend esta offline ────────────────────────────
 
@@ -492,6 +493,9 @@ export default function Inference() {
           )}
         </ApiLoadingState>
       </EducationalViz>
+
+      {/* Dashboard de Sampling */}
+      <SamplingComparison prompt={prompt.trim().split(/\s+/)} />
 
       {/* Passo a passo */}
       <StepByStep

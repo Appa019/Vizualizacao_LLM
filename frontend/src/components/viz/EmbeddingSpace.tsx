@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Text, Html } from '@react-three/drei'
+import { OrbitControls, Text, Html, Line } from '@react-three/drei'
 import * as THREE from 'three'
 
 interface EmbeddingPoint {
@@ -65,8 +65,7 @@ function Point({ point, isHovered, onHover }: {
         color={isHovered ? '#111827' : '#6b7280'}
         anchorX="center"
         anchorY="bottom"
-        font="/fonts/Inter-Medium.woff"
-        outlineWidth={0.02}
+        outlineWidth={0.015}
         outlineColor="#ffffff"
       >
         {point.word}
@@ -83,6 +82,47 @@ function Point({ point, isHovered, onHover }: {
         </Html>
       )}
     </group>
+  )
+}
+
+function CategoryLines({ points }: { points: EmbeddingPoint[] }) {
+  const lines = useMemo(() => {
+    const byCategory: Record<string, [number, number, number][]> = {}
+    for (const p of points) {
+      if (!byCategory[p.category]) byCategory[p.category] = []
+      byCategory[p.category].push(p.position)
+    }
+    const result: { color: string; positions: [number, number, number][] }[] = []
+    for (const [cat, positions] of Object.entries(byCategory)) {
+      if (positions.length < 2) continue
+      const color = CATEGORY_COLORS[cat] || CATEGORY_COLORS.default
+      // Connect each point to the next in the group
+      for (let i = 0; i < positions.length - 1; i++) {
+        for (let j = i + 1; j < positions.length; j++) {
+          result.push({ color, positions: [positions[i], positions[j]] })
+        }
+      }
+    }
+    return result
+  }, [points])
+
+  return (
+    <>
+      {lines.map((line, i) => (
+        <Line
+          key={i}
+          points={line.positions}
+          color={line.color}
+          lineWidth={1}
+          dashed
+          dashScale={8}
+          dashSize={1}
+          gapSize={1}
+          transparent
+          opacity={0.35}
+        />
+      ))}
+    </>
   )
 }
 
@@ -135,6 +175,9 @@ function Scene({ points }: { points: EmbeddingPoint[] }) {
       {/* Grid plane */}
       <gridHelper args={[6, 12, '#e5e7eb', '#f3f4f6']} rotation={[0, 0, 0]} />
 
+      {/* Dashed lines connecting same-category words */}
+      <CategoryLines points={points} />
+
       {points.map((point) => (
         <Point
           key={point.word}
@@ -170,21 +213,29 @@ export default function EmbeddingSpace({ points, height = 500 }: EmbeddingSpaceP
         </Canvas>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        {categories.map((cat) => (
-          <div key={cat} className="flex items-center gap-1.5 text-xs text-gray-600">
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: CATEGORY_COLORS[cat] || CATEGORY_COLORS.default }}
-            />
-            {cat}
-          </div>
-        ))}
+      {/* Legend panel */}
+      <div className="border border-gray-200 rounded-sm bg-white p-3">
+        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Categorias</p>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
+          {categories.map((cat) => {
+            const color = CATEGORY_COLORS[cat] || CATEGORY_COLORS.default
+            const count = points.filter((p) => p.category === cat).length
+            return (
+              <div key={cat} className="flex items-center gap-2 text-xs text-gray-700">
+                <span
+                  className="w-3 h-3 rounded-full border"
+                  style={{ backgroundColor: color, borderColor: color }}
+                />
+                <span className="font-medium">{cat}</span>
+                <span className="text-gray-400 font-mono text-[10px]">({count})</span>
+              </div>
+            )
+          })}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-2">
+          Linhas tracejadas conectam palavras da mesma categoria. Arraste para rotacionar. Scroll para zoom.
+        </p>
       </div>
-      <p className="text-xs text-gray-500 text-center">
-        Arraste para rotacionar. Scroll para zoom. Passe o mouse sobre os pontos para detalhes.
-      </p>
     </div>
   )
 }

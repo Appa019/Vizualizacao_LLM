@@ -12,6 +12,7 @@ import WhyItMatters from '../components/education/WhyItMatters'
 import EducationalViz from '../components/education/EducationalViz'
 import Slider from '../components/ui/Slider'
 import ApiLoadingState from '../components/education/ApiLoadingState'
+import TrainingObjectivesViz from '../components/viz/TrainingObjectivesViz'
 
 export default function Training() {
   const { nivelConhecimento } = useOutletContext<LayoutContext>()
@@ -248,6 +249,9 @@ export default function Training() {
           <p className="text-sm text-gray-700 leading-relaxed">{objectives.data.comparacao}</p>
         </div>
       )}
+
+      {/* Visualizacao MLM vs CLM */}
+      <TrainingObjectivesViz />
 
       <WhyItMatters>
         <p>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { Brain, BookOpenText, Scales, SquaresFour } from '@phosphor-icons/react'
 import PlotlyChart from '../components/viz/PlotlyChart'
+import PredictNextWord from '../components/viz/PredictNextWord'
 import StepByStep from '../components/education/StepByStep'
 import WhyItMatters from '../components/education/WhyItMatters'
 import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
@@ -16,6 +17,7 @@ const timelineItems = [
     cor: '#6b7280',
     descricao:
       'Redes Neurais Recorrentes processam sequencias token por token, mantendo um "estado oculto" que carrega informacao dos tokens anteriores. Limitacao: dificuldade com dependencias de longo alcance.',
+    impacto: 'Primeira arquitetura para sequencias',
   },
   {
     ano: 1997,
@@ -23,6 +25,7 @@ const timelineItems = [
     cor: '#8b5cf6',
     descricao:
       'Long Short-Term Memory adicionou "portoes" (gates) que controlam o fluxo de informacao, permitindo memorizar dependencias mais longas. Ainda sequencial, mas muito mais robusto que RNNs.',
+    impacto: 'Permitiu traducao automatica neural',
   },
   {
     ano: 2017,
@@ -30,6 +33,7 @@ const timelineItems = [
     cor: '#ef4444',
     descricao:
       '"Attention Is All You Need" (Vaswani et al.) introduziu self-attention, eliminando recorrencia. Cada token pode olhar para todos os outros em paralelo -- revolucionando NLP.',
+    impacto: 'Revolucionou todo o campo de NLP',
   },
   {
     ano: 2019,
@@ -37,6 +41,7 @@ const timelineItems = [
     cor: '#22c55e',
     descricao:
       'OpenAI treinou um Transformer decoder-only com 1.5B parametros em 40GB de texto da web. Tao bom em gerar texto que inicialmente nao foi liberado por medo de uso indevido.',
+    impacto: 'Mostrou que escala importa',
   },
   {
     ano: 2020,
@@ -44,6 +49,7 @@ const timelineItems = [
     cor: '#3b82f6',
     descricao:
       'Com 175B parametros, demonstrou capacidades emergentes: few-shot learning, raciocinio basico, geracao de codigo. Mostrou que escala gera capacidades nao previstas.',
+    impacto: 'Capacidades emergentes surpreenderam pesquisadores',
   },
   {
     ano: 2022,
@@ -51,6 +57,7 @@ const timelineItems = [
     cor: '#f59e0b',
     descricao:
       'GPT-3.5 ajustado com RLHF para seguir instrucoes e dialogar. Atingiu 100M de usuarios em 2 meses -- o crescimento mais rapido da historia de produtos de consumo.',
+    impacto: '100M usuarios em 2 meses',
   },
   {
     ano: 2023,
@@ -58,6 +65,7 @@ const timelineItems = [
     cor: '#ec4899',
     descricao:
       'Modelo multimodal (texto + imagem) com ~1.8T parametros (estimado). Passou no exame da OAB, em provas de medicina e em competicoes de programacao. Marco da IA generalista.',
+    impacto: 'IA generalista se tornou realidade',
   },
 ]
 
@@ -204,7 +212,10 @@ export default function WhatAreLLMs() {
 
           {/* Description panel */}
           {selectedTimeline !== null && (
-            <div className="mt-4 p-4 rounded-sm bg-gray-100 border border-gray-200 animate-slide-up">
+            <div
+              className="mt-4 p-4 rounded-sm bg-gray-100 border border-gray-200 animate-slide-up border-l-[3px]"
+              style={{ borderLeftColor: timelineItems[selectedTimeline].cor }}
+            >
               <div className="flex items-center gap-2 mb-2">
                 <div
                   className="w-2 h-2 rounded-full"
@@ -219,6 +230,12 @@ export default function WhatAreLLMs() {
               </div>
               <p className="text-xs text-gray-600 leading-relaxed">
                 {timelineItems[selectedTimeline].descricao}
+              </p>
+              <p
+                className="mt-2 text-[11px] font-semibold tracking-wide"
+                style={{ color: timelineItems[selectedTimeline].cor }}
+              >
+                Impacto: {timelineItems[selectedTimeline].impacto}
               </p>
             </div>
           )}
@@ -436,6 +453,9 @@ export default function WhatAreLLMs() {
           </p>
         </div>
       </WhyItMatters>
+
+      {/* Jogo de predicao */}
+      <PredictNextWord />
 
       {/* Proximo modulo */}
       <div className="glass-card p-5 flex items-center justify-between">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { Hash } from '@phosphor-icons/react'
 import { useTokenize, useBPESteps, useCompareTokenizers } from '../api/hooks'
+import BPEAnimation from '../components/viz/BPEAnimation'
 import StepByStep from '../components/education/StepByStep'
 import FormulaBlock from '../components/education/FormulaBlock'
 import WhyItMatters from '../components/education/WhyItMatters'
@@ -107,6 +108,8 @@ export default function Tokenization() {
 
   // Dados do comparador
   const compareData = compareTokenizers.data?.abordagens ?? FALLBACK_COMPARE
+  const maxTokenCount = Math.max(...compareData.map((a) => a.num_tokens))
+  const minTokenCount = Math.min(...compareData.map((a) => a.num_tokens))
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-10 animate-slide-up">
@@ -295,6 +298,9 @@ export default function Tokenization() {
         )}
       </div>
 
+      {/* Animacao BPE */}
+      <BPEAnimation texto={entrada} />
+
       {/* Comparacao de tokenizadores */}
       <EducationalViz
         title="Comparacao de Abordagens"
@@ -306,42 +312,100 @@ export default function Tokenization() {
           error={compareTokenizers.error}
           fallback={
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {FALLBACK_COMPARE.map((abordagem) => (
+              {FALLBACK_COMPARE.map((abordagem) => {
+                const barWidth = maxTokenCount > 0 ? (abordagem.num_tokens / maxTokenCount) * 100 : 0
+                const isMostEfficient = abordagem.num_tokens === minTokenCount
+                const isLeastEfficient = abordagem.num_tokens === maxTokenCount
+                return (
+                  <div key={abordagem.nome} className="glass-card p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold text-emerald-600">{abordagem.nome}</h4>
+                      <span className="text-xs font-mono text-gray-500">{abordagem.num_tokens} tokens</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500">{abordagem.descricao}</p>
+                    <div>
+                      <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${barWidth}%`,
+                            backgroundColor: isMostEfficient ? '#22c55e' : isLeastEfficient ? '#f97316' : '#6b7280',
+                          }}
+                        />
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-gray-400">{abordagem.num_tokens}/{maxTokenCount}</span>
+                        {isMostEfficient && (
+                          <span className="text-[10px] font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-sm">
+                            mais eficiente
+                          </span>
+                        )}
+                        {isLeastEfficient && (
+                          <span className="text-[10px] font-medium text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-sm">
+                            menos eficiente
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {abordagem.tokens.map((t, i) => (
+                        <span key={i} className={`px-1.5 py-0.5 rounded border text-[11px] font-mono ${CORES_TOKENS[i % CORES_TOKENS.length]}`}>
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          }
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {compareData.map((abordagem) => {
+              const barWidth = maxTokenCount > 0 ? (abordagem.num_tokens / maxTokenCount) * 100 : 0
+              const isMostEfficient = abordagem.num_tokens === minTokenCount
+              const isLeastEfficient = abordagem.num_tokens === maxTokenCount
+              return (
                 <div key={abordagem.nome} className="glass-card p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold text-emerald-600">{abordagem.nome}</h4>
                     <span className="text-xs font-mono text-gray-500">{abordagem.num_tokens} tokens</span>
                   </div>
                   <p className="text-[11px] text-gray-500">{abordagem.descricao}</p>
+                  <div>
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${barWidth}%`,
+                          backgroundColor: isMostEfficient ? '#22c55e' : isLeastEfficient ? '#f97316' : '#6b7280',
+                        }}
+                      />
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-gray-400">{abordagem.num_tokens}/{maxTokenCount}</span>
+                      {isMostEfficient && (
+                        <span className="text-[10px] font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-sm">
+                          mais eficiente
+                        </span>
+                      )}
+                      {isLeastEfficient && (
+                        <span className="text-[10px] font-medium text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-sm">
+                          menos eficiente
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {abordagem.tokens.map((t, i) => (
                       <span key={i} className={`px-1.5 py-0.5 rounded border text-[11px] font-mono ${CORES_TOKENS[i % CORES_TOKENS.length]}`}>
-                        {t}
+                        {t === ' ' ? '\u00B7' : t}
                       </span>
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          }
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {compareData.map((abordagem) => (
-              <div key={abordagem.nome} className="glass-card p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-emerald-600">{abordagem.nome}</h4>
-                  <span className="text-xs font-mono text-gray-500">{abordagem.num_tokens} tokens</span>
-                </div>
-                <p className="text-[11px] text-gray-500">{abordagem.descricao}</p>
-                <div className="flex flex-wrap gap-1">
-                  {abordagem.tokens.map((t, i) => (
-                    <span key={i} className={`px-1.5 py-0.5 rounded border text-[11px] font-mono ${CORES_TOKENS[i % CORES_TOKENS.length]}`}>
-                      {t === ' ' ? '\u00B7' : t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </ApiLoadingState>
       </EducationalViz>
