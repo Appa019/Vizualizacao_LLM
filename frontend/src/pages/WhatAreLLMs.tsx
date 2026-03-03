@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Brain, BookOpenText, Scales, SquaresFour } from '@phosphor-icons/react'
 import PlotlyChart from '../components/viz/PlotlyChart'
 import StepByStep from '../components/education/StepByStep'
 import WhyItMatters from '../components/education/WhyItMatters'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
+import type { LayoutContext } from '../components/layout/Layout'
 
 // ─── O que sao LLMs? ──────────────────────────────────────────────────────────
 
@@ -65,6 +68,7 @@ const modelParams = {
 }
 
 export default function WhatAreLLMs() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [selectedTimeline, setSelectedTimeline] = useState<number | null>(null)
 
   return (
@@ -80,13 +84,22 @@ export default function WhatAreLLMs() {
           O que sao LLMs?
         </h2>
 
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Grandes Modelos de Linguagem (LLMs -- <em>Large Language Models</em>)
-          sao sistemas de inteligencia artificial treinados em enormes volumes
-          de texto. Eles aprendem padroes estatisticos da linguagem humana e
-          conseguem gerar, resumir, traduzir e raciocinar sobre texto com
-          precisao notavel.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Grandes Modelos de Linguagem (LLMs -- <em>Large Language Models</em>)
+              sao sistemas de inteligencia artificial treinados em enormes volumes
+              de texto. Eles aprendem padroes estatisticos da linguagem humana e
+              conseguem gerar, resumir, traduzir e raciocinar sobre texto com
+              precisao notavel.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Imagine que voce pudesse ler todos os livros, sites e conversas do mundo. Depois de ler tudo isso, voce comeca a perceber padroes - quais palavras aparecem juntas, como frases sao construidas, como ideias se conectam. LLMs fazem exatamente isso, mas com matematica: eles leem bilhoes de textos e aprendem padroes estatisticos da linguagem.
+            </p>
+          }
+        />
       </section>
 
       {/* Cards de definicao */}
@@ -128,6 +141,18 @@ export default function WhatAreLLMs() {
           )
         })}
       </section>
+
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">O que e um parametro?</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Imagine um mixer de som com bilhoes de botoes. Cada botao controla um aspecto minusculo de como o modelo entende linguagem - um botao afeta como ele entende "gato", outro como liga "gato" a "animal". "Treinar" e ajustar todos esses botoes ate o som ficar perfeito.
+            </p>
+          </section>
+        }
+      />
 
       {/* Timeline horizontal */}
       <section>
@@ -247,6 +272,17 @@ export default function WhatAreLLMs() {
       </section>
 
       {/* Step by Step: como previsao vira inteligencia */}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200 mb-4">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">Uma analogia sobre emergencia</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Uma formiga sozinha nao faz nada impressionante. Mas bilhoes de formigas juntas constroem cidades inteiras. LLMs funcionam assim - bilhoes de parametros simples, juntos, criam comportamento inteligente.
+            </p>
+          </section>
+        }
+      />
       <StepByStep
         title="Como previsao de proximo token vira inteligencia"
         steps={[

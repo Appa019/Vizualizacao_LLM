@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Stack } from '@phosphor-icons/react'
 import { useEmbeddings, usePositionalEncoding, useEmbeddingSpace, useTokenize } from '../api/hooks'
 import EmbeddingSpace from '../components/viz/EmbeddingSpace'
@@ -9,6 +10,8 @@ import WhyItMatters from '../components/education/WhyItMatters'
 import EducationalViz from '../components/education/EducationalViz'
 import Toggle from '../components/ui/Toggle'
 import ApiLoadingState from '../components/education/ApiLoadingState'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
+import type { LayoutContext } from '../components/layout/Layout'
 
 // ─── Dados fallback ─────────────────────────────────────────────────────────
 
@@ -25,6 +28,7 @@ const PALAVRAS_TESTE = ['gato', 'cachorro', 'rei', 'rainha', 'homem', 'mulher', 
 // ─── Componente principal ───────────────────────────────────────────────────
 
 export default function Embeddings() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [inputText, setInputText] = useState('O gato dormiu no tapete quente')
   const [metodo, setMetodo] = useState<'pca' | 'tsne'>('pca')
 
@@ -106,11 +110,20 @@ export default function Embeddings() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Embeddings
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Um embedding e uma representacao numerica de um token em um espaco vetorial de
-          alta dimensao. Tokens com significados semelhantes ficam proximos nesse espaco -
-          e assim que o modelo "entende" semantica.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Um embedding e uma representacao numerica de um token em um espaco vetorial de
+              alta dimensao. Tokens com significados semelhantes ficam proximos nesse espaco -
+              e assim que o modelo "entende" semantica.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Computadores nao entendem palavras - so numeros. Embeddings sao a forma de traduzir palavras para numeros de um jeito inteligente. Imagine um mapa gigante onde cada palavra tem um endereco. Palavras parecidas ficam perto: 'gato' e 'cachorro' sao vizinhos, mas 'gato' e 'aviao' ficam longe.
+            </p>
+          }
+        />
       </section>
 
       {/* Input */}
@@ -131,13 +144,29 @@ export default function Embeddings() {
       <StepByStep steps={steps} title="Como Embeddings Sao Construidos" />
 
       {/* Formula KaTeX */}
-      <FormulaBlock
-        formula="PE_{(pos, 2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)"
-        variables={[
-          { symbol: 'pos', color: '#a855f7', label: 'Posicao', description: 'Posicao do token na sequencia (0, 1, 2, ...)' },
-          { symbol: 'i', color: '#3b82f6', label: 'Dimensao', description: 'Indice da dimensao do embedding' },
-          { symbol: 'd_{model}', color: '#f59e0b', label: 'Dimensao do modelo', description: 'Tamanho total do vetor de embedding' },
-        ]}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">O que e um vetor?</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Pense num endereco: Rua X, numero Y, andar Z. Um vetor e um "endereco matematico", mas com centenas de "coordenadas". Cada coordenada descreve um aspecto do significado da palavra - uma pode indicar "e um animal?", outra "e algo positivo?", outra "e concreto ou abstrato?".
+            </p>
+          </section>
+        }
+      />
+      <ConteudoAdaptavel
+        avancado={
+          <FormulaBlock
+            formula="PE_{(pos, 2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)"
+            variables={[
+              { symbol: 'pos', color: '#a855f7', label: 'Posicao', description: 'Posicao do token na sequencia (0, 1, 2, ...)' },
+              { symbol: 'i', color: '#3b82f6', label: 'Dimensao', description: 'Indice da dimensao do embedding' },
+              { symbol: 'd_{model}', color: '#f59e0b', label: 'Dimensao do modelo', description: 'Tamanho total do vetor de embedding' },
+            ]}
+          />
+        }
+        iniciante={null}
       />
 
       {/* Embedding Space 3D */}
@@ -215,6 +244,18 @@ export default function Embeddings() {
           </p>
         </div>
       </section>
+
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">Similaridade em linguagem simples</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              No mapa da cidade, "padaria" e "confeitaria" ficam no mesmo bairro. Em embeddings, palavras com significados parecidos ficam "perto" no espaco matematico. O modelo sabe que "feliz" e "alegre" sao parecidos porque eles aparecem em contextos similares nos textos de treinamento.
+            </p>
+          </section>
+        }
+      />
 
       {/* Dimensoes em LLMs */}
       <section>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Hash } from '@phosphor-icons/react'
 import { useTokenize, useBPESteps, useCompareTokenizers } from '../api/hooks'
 import StepByStep from '../components/education/StepByStep'
@@ -6,6 +7,8 @@ import FormulaBlock from '../components/education/FormulaBlock'
 import WhyItMatters from '../components/education/WhyItMatters'
 import EducationalViz from '../components/education/EducationalViz'
 import ApiLoadingState from '../components/education/ApiLoadingState'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
+import type { LayoutContext } from '../components/layout/Layout'
 
 // ─── Paleta de cores para tokens ─────────────────────────────────────────────
 
@@ -40,6 +43,7 @@ const FALLBACK_COMPARE = [
 // ─── Componente principal ────────────────────────────────────────────────────
 
 export default function Tokenization() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [entrada, setEntrada] = useState('O gato dormiu no tapete')
 
   const tokenize = useTokenize()
@@ -115,22 +119,47 @@ export default function Tokenization() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Tokenizacao
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Modelos de linguagem nao leem palavras - leem <em>tokens</em>. Tokens sao fragmentos
-          de texto que podem ser palavras completas, partes de palavras ou ate caracteres
-          individuais, dependendo do vocabulario do modelo.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Modelos de linguagem nao leem palavras - leem <em>tokens</em>. Tokens sao fragmentos
+              de texto que podem ser palavras completas, partes de palavras ou ate caracteres
+              individuais, dependendo do vocabulario do modelo.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Tokenizacao e como cortar uma pizza: voce pode cortar em fatias grandes (palavras inteiras), medias (pedacos de palavras), ou minusculas (letra por letra). O segredo e encontrar o melhor tamanho de fatia para que o modelo entenda tudo sem gastar demais.
+            </p>
+          }
+        />
       </section>
 
       {/* Formula BPE */}
-      <FormulaBlock
-        formula="\\text{merge}(t_a, t_b) \\to t_{ab} \\quad \\text{onde} \\quad (t_a, t_b) = \\arg\\max_{(x,y)} \\text{freq}(x, y)"
-        variables={[
-          { symbol: 't_a', color: '#3b82f6', label: 'Token A', description: 'Primeiro token do par mais frequente' },
-          { symbol: 't_b', color: '#22c55e', label: 'Token B', description: 'Segundo token do par mais frequente' },
-          { symbol: 't_{ab}', color: '#a855f7', label: 'Token fundido', description: 'Novo token criado pela fusao de A e B' },
-        ]}
-        size="lg"
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">Por que nao usar palavras inteiras?</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Imagina que voce so sabe 1000 palavras. Se encontrar "anticonstitucional", nao entende. Mas se souber "anti" + "constitucional", da pra deduzir! O BPE funciona assim - aprende pedacos uteis de palavras que podem ser combinados.
+            </p>
+          </section>
+        }
+      />
+      <ConteudoAdaptavel
+        avancado={
+          <FormulaBlock
+            formula="\\text{merge}(t_a, t_b) \\to t_{ab} \\quad \\text{onde} \\quad (t_a, t_b) = \\arg\\max_{(x,y)} \\text{freq}(x, y)"
+            variables={[
+              { symbol: 't_a', color: '#3b82f6', label: 'Token A', description: 'Primeiro token do par mais frequente' },
+              { symbol: 't_b', color: '#22c55e', label: 'Token B', description: 'Segundo token do par mais frequente' },
+              { symbol: 't_{ab}', color: '#a855f7', label: 'Token fundido', description: 'Novo token criado pela fusao de A e B' },
+            ]}
+            size="lg"
+          />
+        }
+        iniciante={null}
       />
 
       {/* Tokenizador interativo */}

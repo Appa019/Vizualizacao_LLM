@@ -11,6 +11,7 @@ import {
   useSetupStatus,
 } from '../api/hooks'
 import type { LayoutContext } from '../components/layout/Layout'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
 import Heatmap3D from '../components/viz/Heatmap3D'
 import AttentionFlow from '../components/viz/AttentionFlow'
 import StepByStep from '../components/education/StepByStep'
@@ -46,7 +47,7 @@ const attentionVars = [
 // ─── Componente principal ───────────────────────────────────────────────────
 
 export default function Attention() {
-  const { modoSimulacao } = useOutletContext<LayoutContext>()
+  const { modoSimulacao, nivelConhecimento } = useOutletContext<LayoutContext>()
   const [inputText, setInputText] = useState('O gato pulou no jardim')
   const [tokens, setTokens] = useState<string[]>(FALLBACK_TOKENS)
   const [tokenSelecionado, setTokenSelecionado] = useState(0)
@@ -163,11 +164,20 @@ export default function Attention() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Mecanismo de Atencao
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          A atencao permite que cada token "observe" todos os outros tokens na sequencia
-          e decida quanto peso dar a cada um. E o que da ao Transformer sua capacidade
-          de capturar dependencias de longo alcance.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              A atencao permite que cada token "observe" todos os outros tokens na sequencia
+              e decida quanto peso dar a cada um. E o que da ao Transformer sua capacidade
+              de capturar dependencias de longo alcance.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              A atencao funciona como o Google: voce digita uma pesquisa (Query), o Google compara com titulos de paginas (Keys), e mostra o conteudo relevante (Values). No Transformer, cada palavra 'pesquisa' quais outras palavras sao relevantes para entende-la.
+            </p>
+          }
+        />
       </section>
 
       {/* Warning banner when real model selected but not loaded */}
@@ -245,14 +255,40 @@ export default function Attention() {
         />
       )}
 
+      {/* Explicacoes iniciante antes da formula */}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <div className="space-y-4">
+            <section className="glass-card p-5 bg-green-50 border-green-200">
+              <h4 className="text-sm font-semibold text-green-700 mb-2">Por que multiplas "cabecas" de atencao?</h4>
+              <p className="text-xs text-green-600 leading-relaxed">
+                E como ter 8 pessoas lendo o mesmo texto: uma presta atencao na gramatica, outra no tema, outra nas emocoes. Juntas, capturam tudo. Cada "cabeca" aprende a focar em um tipo diferente de relacao entre as palavras.
+              </p>
+            </section>
+            <section className="glass-card p-5 bg-blue-50 border-blue-200">
+              <h4 className="text-sm font-semibold text-blue-700 mb-2">Por que dividir pela raiz de dk?</h4>
+              <p className="text-xs text-blue-600 leading-relaxed">
+                Sem dividir pela raiz, os numeros ficam ENORMES e o softmax "satura" - vira tudo 0 ou 1, perdendo nuances. E como ajustar o volume: sem controle, ou fica mudo ou ensurdecedor. Dividir mantem os valores num range saudavel.
+              </p>
+            </section>
+          </div>
+        }
+      />
+
       {/* Formula KaTeX */}
-      <section>
-        <FormulaBlock
-          formula="\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V"
-          variables={attentionVars}
-          size="lg"
-        />
-      </section>
+      <ConteudoAdaptavel
+        avancado={
+          <section>
+            <FormulaBlock
+              formula="\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V"
+              variables={attentionVars}
+              size="lg"
+            />
+          </section>
+        }
+        iniciante={null}
+      />
 
       {/* Heatmap de atencao */}
       <EducationalViz

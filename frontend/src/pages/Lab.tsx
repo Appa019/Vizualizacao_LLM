@@ -11,6 +11,7 @@ import {
   useSetupStatus,
 } from '../api/hooks'
 import type { LayoutContext } from '../components/layout/Layout'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
 import EmbeddingSpace from '../components/viz/EmbeddingSpace'
 import Heatmap3D from '../components/viz/Heatmap3D'
 import ApiLoadingState from '../components/education/ApiLoadingState'
@@ -53,7 +54,7 @@ const embeddingTestWords = [
 const attentionTestTokens = ['O', 'gato', 'sentou', 'no', 'tapete', 'macio']
 
 export default function Lab() {
-  const { modoSimulacao } = useOutletContext<LayoutContext>()
+  const { modoSimulacao, nivelConhecimento } = useOutletContext<LayoutContext>()
   const [activeTab, setActiveTab] = useState<TabId>('tokenizacao')
 
   // ── Tokenization state ──
@@ -139,11 +140,20 @@ export default function Lab() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Laboratorio Interativo
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Coloque em pratica tudo que voce aprendeu. Experimente a tokenizacao,
-          explore embeddings, visualize atencao e interaja diretamente com o
-          modelo via API.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Coloque em pratica tudo que voce aprendeu. Experimente a tokenizacao,
+              explore embeddings, visualize atencao e interaja diretamente com o
+              modelo via API.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Este e o seu laboratorio! Aqui voce pode brincar com as mesmas ferramentas que os pesquisadores usam: dividir texto em tokens, ver como o modelo entende palavras, e ate gerar texto. Nao precisa saber programar - e so clicar e explorar.
+            </p>
+          }
+        />
       </section>
 
       {/* Model status */}
@@ -194,9 +204,18 @@ export default function Lab() {
           <h3 className="text-sm font-semibold text-gray-800">
             Experimento: Tokenizacao via API
           </h3>
-          <p className="text-xs text-gray-500">
-            Digite texto e veja como o tokenizador BPE o divide em tokens.
-          </p>
+          <ConteudoAdaptavel
+            avancado={
+              <p className="text-xs text-gray-500">
+                Digite texto e veja como o tokenizador BPE o divide em tokens.
+              </p>
+            }
+            iniciante={
+              <p className="text-xs text-gray-500">
+                Digite qualquer texto e veja como o modelo o 'picota' em pedacos menores. Cada pedaco colorido e um token - a menor unidade que o modelo entende.
+              </p>
+            }
+          />
           <textarea
             value={textoToken}
             onChange={(e) => setTextoToken(e.target.value)}
@@ -264,9 +283,18 @@ export default function Lab() {
               <h3 className="text-sm font-semibold text-gray-800">
                 Experimento: Geracao de texto
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Envie um prompt e veja o modelo gerar texto token por token.
-              </p>
+              <ConteudoAdaptavel
+                avancado={
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Envie um prompt e veja o modelo gerar texto token por token.
+                  </p>
+                }
+                iniciante={
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Escreva o inicio de uma frase e veja o modelo tentar completa-la, palavra por palavra. E como o autocompletar do celular, so que muito mais poderoso!
+                  </p>
+                }
+              />
             </div>
           </div>
 
@@ -356,10 +384,19 @@ export default function Lab() {
           <h3 className="text-sm font-semibold text-gray-800">
             Experimento: Espaco de Embeddings 3D
           </h3>
-          <p className="text-xs text-gray-500">
-            Visualize como palavras similares ficam proximas no espaco vetorial.
-            Palavras da mesma categoria semantica tendem a formar clusters.
-          </p>
+          <ConteudoAdaptavel
+            avancado={
+              <p className="text-xs text-gray-500">
+                Visualize como palavras similares ficam proximas no espaco vetorial.
+                Palavras da mesma categoria semantica tendem a formar clusters.
+              </p>
+            }
+            iniciante={
+              <p className="text-xs text-gray-500">
+                Veja como o modelo organiza palavras no espaco 3D. Palavras parecidas ficam perto - 'gato' e 'cachorro' sao vizinhos, 'vermelho' e 'azul' tambem.
+              </p>
+            }
+          />
 
           <ApiLoadingState
             loading={embeddingApi.loading}
@@ -418,11 +455,20 @@ export default function Lab() {
               {usandoReal ? `Modelo Real - ${modeloNome}` : 'Simulacao'}
             </span>
           </div>
-          <p className="text-xs text-gray-500">
-            Visualize os pesos de self-attention entre tokens. Cores mais
-            intensas indicam que o modelo "presta mais atencao" entre aquele par
-            de tokens.
-          </p>
+          <ConteudoAdaptavel
+            avancado={
+              <p className="text-xs text-gray-500">
+                Visualize os pesos de self-attention entre tokens. Cores mais
+                intensas indicam que o modelo "presta mais atencao" entre aquele par
+                de tokens.
+              </p>
+            }
+            iniciante={
+              <p className="text-xs text-gray-500">
+                Veja quais palavras o modelo acha que sao mais importantes para entender cada outra palavra. Cores mais fortes = mais atencao entre aquelas palavras.
+              </p>
+            }
+          />
 
           {usandoReal ? (
             <ApiLoadingState

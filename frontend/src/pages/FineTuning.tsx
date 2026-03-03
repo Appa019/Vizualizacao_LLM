@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Sliders, CheckCircle } from '@phosphor-icons/react'
+import type { LayoutContext } from '../components/layout/Layout'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
 import PlotlyChart from '../components/viz/PlotlyChart'
 import FormulaBlock from '../components/education/FormulaBlock'
 import WhyItMatters from '../components/education/WhyItMatters'
@@ -9,6 +12,7 @@ import Slider from '../components/ui/Slider'
 // ─── Fine-tuning ──────────────────────────────────────────────────────────────
 
 export default function FineTuning() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [rank, setRank] = useState(8)
 
   // Parameter calculations
@@ -31,12 +35,34 @@ export default function FineTuning() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Fine-tuning
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Fine-tuning e o processo de especializar um modelo base pre-treinado
-          para uma tarefa especifica. Em vez de treinar do zero, voce parte de
-          um modelo que ja "sabe" linguagem e o ajusta com poucos dados.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Fine-tuning e o processo de especializar um modelo base pre-treinado
+              para uma tarefa especifica. Em vez de treinar do zero, voce parte de
+              um modelo que ja "sabe" linguagem e o ajusta com poucos dados.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Fine-tuning e como um medico que estudou medicina geral (pre-treino) e depois se especializa em cardiologia. Ele nao esquece medicina geral - so ganha conhecimento extra numa area. Da mesma forma, um LLM pre-treinado pode ser especializado para escrever codigo, responder sobre medicina, ou falar no tom da sua empresa.
+            </p>
+          }
+        />
       </section>
+
+      {/* Explicacao iniciante antes do LoRA */}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">LoRA em linguagem simples</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Em vez de reescrever o livro inteiro (todos os parametros), LoRA adiciona post-its nas paginas certas. Voce mantem o livro original intacto e so adiciona notas com o conhecimento novo. Economiza memoria e tempo, com resultado quase igual a reescrever tudo.
+            </p>
+          </section>
+        }
+      />
 
       {/* LoRA Visualization */}
       <section className="glass-card p-6 space-y-5">

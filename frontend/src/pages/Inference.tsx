@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Lightning, Play } from '@phosphor-icons/react'
 import { useGenerate, useTemperatureDemo, useSamplingDemo } from '../api/hooks'
+import type { LayoutContext } from '../components/layout/Layout'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
 import TokenStream from '../components/viz/TokenStream'
 import PlotlyChart from '../components/viz/PlotlyChart'
 import StepByStep from '../components/education/StepByStep'
@@ -32,6 +35,7 @@ const STRATEGY_OPTIONS = [
 // ─── Componente principal ────────────────────────────────────────────────────
 
 export default function Inference() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [prompt, setPrompt] = useState('o gato')
   const [estrategia, setEstrategia] = useState('greedy')
   const [temperatura, setTemperatura] = useState(1.0)
@@ -148,22 +152,49 @@ export default function Inference() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Inferencia
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Durante a inferencia, o modelo gera texto um token por vez. A cada passo, ele
-          produz uma distribuicao de probabilidade sobre o vocabulario inteiro e seleciona
-          o proximo token com base em uma estrategia de decodificacao.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Durante a inferencia, o modelo gera texto um token por vez. A cada passo, ele
+              produz uma distribuicao de probabilidade sobre o vocabulario inteiro e seleciona
+              o proximo token com base em uma estrategia de decodificacao.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Inferencia e o autocompletar do celular turbinado. Voce digita 'Eu quero' e o modelo calcula a probabilidade de cada palavra ser a proxima: 'comer' 30%, 'ir' 25%, 'dormir' 15%... Depois escolhe uma e repete o processo ate formar uma frase completa.
+            </p>
+          }
+        />
       </section>
 
+      {/* Explicacao iniciante antes da formula */}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <section className="glass-card p-5 bg-green-50 border-green-200">
+            <h4 className="text-sm font-semibold text-green-700 mb-2">Greedy vs Sampling - qual a diferenca?</h4>
+            <p className="text-xs text-green-600 leading-relaxed">
+              Greedy sempre escolhe a palavra mais provavel - e seguro mas chato, como sempre pedir o mesmo prato no restaurante. Sampling sorteia baseado nas probabilidades - e mais criativo, como experimentar pratos novos. A temperatura controla o quanto voce e aventureiro: baixa = seguro, alta = ousado.
+            </p>
+          </section>
+        }
+      />
+
       {/* Formula da temperatura */}
-      <FormulaBlock
-        formula="p_i = \\frac{e^{z_i/T}}{\\sum_j e^{z_j/T}}"
-        variables={[
-          { symbol: 'p_i', color: '#22d3ee', label: 'Probabilidade', description: 'Probabilidade ajustada do token i' },
-          { symbol: 'z_i', color: '#3b82f6', label: 'Logit', description: 'Logit bruto do token i antes do softmax' },
-          { symbol: 'T', color: '#ef4444', label: 'Temperatura', description: 'Controla a aleatoriedade: T<1 concentra, T>1 espalha' },
-        ]}
-        size="lg"
+      <ConteudoAdaptavel
+        avancado={
+          <FormulaBlock
+            formula="p_i = \\frac{e^{z_i/T}}{\\sum_j e^{z_j/T}}"
+            variables={[
+              { symbol: 'p_i', color: '#22d3ee', label: 'Probabilidade', description: 'Probabilidade ajustada do token i' },
+              { symbol: 'z_i', color: '#3b82f6', label: 'Logit', description: 'Logit bruto do token i antes do softmax' },
+              { symbol: 'T', color: '#ef4444', label: 'Temperatura', description: 'Controla a aleatoriedade: T<1 concentra, T>1 espalha' },
+            ]}
+            size="lg"
+          />
+        }
+        iniciante={null}
       />
 
       {/* Controles de geracao */}

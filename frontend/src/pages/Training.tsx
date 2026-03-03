@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Student, Play, ArrowCounterClockwise } from '@phosphor-icons/react'
 import { useTrainStep, useLossSurface, useGradientDescent, useTrainingObjectives } from '../api/hooks'
+import type { LayoutContext } from '../components/layout/Layout'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
 import LossSurface from '../components/viz/LossSurface'
 import PlotlyChart from '../components/viz/PlotlyChart'
 import StepByStep from '../components/education/StepByStep'
@@ -11,6 +14,7 @@ import Slider from '../components/ui/Slider'
 import ApiLoadingState from '../components/education/ApiLoadingState'
 
 export default function Training() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [learningRate, setLearningRate] = useState(0.01)
   const [gdLr, setGdLr] = useState(0.1)
 
@@ -88,22 +92,57 @@ export default function Training() {
           Modulo 07
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">Treinamento</h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          O treinamento e o processo de ajustar bilhoes de parametros para minimizar uma funcao de loss.
-          Entenda como gradient descent navega a paisagem de otimizacao e como diferentes
-          objetivos (MLM vs CLM) ensinam o modelo.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              O treinamento e o processo de ajustar bilhoes de parametros para minimizar uma funcao de loss.
+              Entenda como gradient descent navega a paisagem de otimizacao e como diferentes
+              objetivos (MLM vs CLM) ensinam o modelo.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              Treinar um modelo e como ensinar alguem a cozinhar: voce mostra milhares de receitas, a pessoa tenta reproduzir, erra, corrige, e vai melhorando. O 'loss' e como uma nota de prova invertida - 0 significa acertou tudo, numero grande significa errou muito. O objetivo e diminuir esse numero.
+            </p>
+          }
+        />
       </section>
 
-      <FormulaBlock
-        formula="\\mathcal{L} = -\\sum_{i=1}^{V} y_i \\log(\\hat{y}_i)"
-        variables={[
-          { symbol: '\\mathcal{L}', color: '#ef4444', label: 'Loss', description: 'Funcao de custo - queremos minimizar' },
-          { symbol: 'y_i', color: '#22c55e', label: 'Alvo', description: 'Distribuicao alvo (one-hot do token correto)' },
-          { symbol: '\\hat{y}_i', color: '#3b82f6', label: 'Predicao', description: 'Probabilidade prevista pelo modelo' },
-          { symbol: 'V', color: '#f59e0b', label: 'Vocabulario', description: 'Tamanho do vocabulario' },
-        ]}
-        size="lg"
+      {/* Explicacoes iniciante antes da formula */}
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <div className="space-y-4">
+            <section className="glass-card p-5 bg-green-50 border-green-200">
+              <h4 className="text-sm font-semibold text-green-700 mb-2">O que e gradiente?</h4>
+              <p className="text-xs text-green-600 leading-relaxed">
+                Imagine uma bola numa colina. O gradiente e a inclinacao do terreno - ele diz "desca por aqui". A bola vai descendo ate encontrar o vale mais fundo (menor loss). O treinamento faz exatamente isso com os parametros do modelo.
+              </p>
+            </section>
+            <section className="glass-card p-5 bg-blue-50 border-blue-200">
+              <h4 className="text-sm font-semibold text-blue-700 mb-2">O que e learning rate?</h4>
+              <p className="text-xs text-blue-600 leading-relaxed">
+                O learning rate e o tamanho do passo da bola descendo a colina. Passo grande = chega rapido ao vale mas pode pular por cima dele. Passo pequeno = preciso mas lento demais. O ideal e encontrar um equilibrio.
+              </p>
+            </section>
+          </div>
+        }
+      />
+
+      <ConteudoAdaptavel
+        avancado={
+          <FormulaBlock
+            formula="\\mathcal{L} = -\\sum_{i=1}^{V} y_i \\log(\\hat{y}_i)"
+            variables={[
+              { symbol: '\\mathcal{L}', color: '#ef4444', label: 'Loss', description: 'Funcao de custo - queremos minimizar' },
+              { symbol: 'y_i', color: '#22c55e', label: 'Alvo', description: 'Distribuicao alvo (one-hot do token correto)' },
+              { symbol: '\\hat{y}_i', color: '#3b82f6', label: 'Predicao', description: 'Probabilidade prevista pelo modelo' },
+              { symbol: 'V', color: '#f59e0b', label: 'Vocabulario', description: 'Tamanho do vocabulario' },
+            ]}
+            size="lg"
+          />
+        }
+        iniciante={null}
       />
 
       <EducationalViz

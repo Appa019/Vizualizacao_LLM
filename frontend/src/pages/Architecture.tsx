@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Cpu } from '@phosphor-icons/react'
 import NetworkGraph from '../components/viz/NetworkGraph'
 import TokenFlow3D from '../components/viz/TokenFlow3D'
 import FormulaBlock from '../components/education/FormulaBlock'
 import WhyItMatters from '../components/education/WhyItMatters'
 import EducationalViz from '../components/education/EducationalViz'
+import ConteudoAdaptavel from '../components/education/ConteudoAdaptavel'
+import type { LayoutContext } from '../components/layout/Layout'
 
 // ─── Arquitetura Transformer ──────────────────────────────────────────────────
 
@@ -118,6 +121,7 @@ const hyperparameters = [
 ]
 
 export default function Architecture() {
+  const { nivelConhecimento } = useOutletContext<LayoutContext>()
   const [selectedLayer, setSelectedLayer] = useState<LayerInfo | null>(null)
 
   const handleLayerClick = (layer: LayerInfo) => {
@@ -139,13 +143,42 @@ export default function Architecture() {
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-4">
           Arquitetura Transformer
         </h2>
-        <p className="text-gray-600 leading-relaxed max-w-2xl">
-          O Transformer foi introduzido em 2017 no artigo "Attention Is All You
-          Need" por Vaswani et al. Ele substituiu recorrencia (RNNs, LSTMs) por
-          atencao, permitindo paralelizacao massiva e captura de dependencias de
-          longo alcance.
-        </p>
+        <ConteudoAdaptavel
+          avancado={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              O Transformer foi introduzido em 2017 no artigo "Attention Is All You
+              Need" por Vaswani et al. Ele substituiu recorrencia (RNNs, LSTMs) por
+              atencao, permitindo paralelizacao massiva e captura de dependencias de
+              longo alcance.
+            </p>
+          }
+          iniciante={
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
+              O Transformer e como uma fabrica com varias estacoes de trabalho empilhadas. Cada estacao (camada) faz algo diferente com o texto: uma entende gramatica, outra captura significado, outra analisa contexto. O texto passa por todas as estacoes e sai 'entendido'.
+            </p>
+          }
+        />
       </section>
+
+      <ConteudoAdaptavel
+        avancado={null}
+        iniciante={
+          <div className="space-y-4">
+            <section className="glass-card p-5 bg-green-50 border-green-200">
+              <h4 className="text-sm font-semibold text-green-700 mb-2">O que e uma camada?</h4>
+              <p className="text-xs text-green-600 leading-relaxed">
+                Pense em filtros do Instagram empilhados. Cada filtro transforma a imagem de um jeito. No Transformer, cada camada transforma a compreensao do texto - uma ve gramatica, outra ve significado, outra ve contexto.
+              </p>
+            </section>
+            <section className="glass-card p-5 bg-blue-50 border-blue-200">
+              <h4 className="text-sm font-semibold text-blue-700 mb-2">Por que Transformers sao mais rapidos?</h4>
+              <p className="text-xs text-blue-600 leading-relaxed">
+                RNNs leem como humanos - uma palavra por vez, na ordem. Transformers leem como quem faz prova - olham tudo de uma vez e voltam no que importa. Por isso sao muito mais rapidos e podem processar textos enormes.
+              </p>
+            </section>
+          </div>
+        }
+      />
 
       {/* Visualizacao 3D do Transformer */}
       <EducationalViz
