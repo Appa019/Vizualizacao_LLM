@@ -20,6 +20,7 @@ interface EducationalVizProps {
   icon?: React.ReactNode
   caption: string
   formula?: FormulaConfig
+  ocultarFormula?: boolean
   whyItMatters?: React.ReactNode
   children: React.ReactNode
   detailLevels?: {
@@ -34,6 +35,7 @@ export default function EducationalViz({
   icon,
   caption,
   formula,
+  ocultarFormula,
   whyItMatters,
   children,
   detailLevels,
@@ -98,7 +100,7 @@ export default function EducationalViz({
       )}
 
       {/* Formula */}
-      {formula && (
+      {formula && !ocultarFormula && (
         <div className="px-6 pb-4">
           <FormulaBlock
             formula={formula.formula}

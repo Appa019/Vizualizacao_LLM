@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom'
-import { Brain, Cpu, ToggleLeft, ToggleRight } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { Brain, Cpu, Student, GraduationCap, ToggleLeft, ToggleRight } from '@phosphor-icons/react'
 
 // ─── Mapa de títulos por rota ─────────────────────────────────────────────────
 
@@ -52,11 +51,13 @@ const titulosPorRota: Record<string, { titulo: string; subtitulo: string }> = {
 interface HeaderProps {
   modoSimulacao: boolean
   onAlternarModo: (ativo: boolean) => void
+  nivelConhecimento: 'iniciante' | 'avancado'
+  onAlternarNivel: () => void
 }
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
-export default function Header({ modoSimulacao, onAlternarModo }: HeaderProps) {
+export default function Header({ modoSimulacao, onAlternarModo, nivelConhecimento, onAlternarNivel }: HeaderProps) {
   const location = useLocation()
   const info = titulosPorRota[location.pathname] ?? {
     titulo: 'LLM Explorer',
@@ -83,7 +84,36 @@ export default function Header({ modoSimulacao, onAlternarModo }: HeaderProps) {
 
       {/* Controles do header */}
       <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-        {/* Toggle simulação vs modelo real */}
+        {/* Toggle nivel de conhecimento */}
+        <button
+          onClick={onAlternarNivel}
+          className={`
+            group flex items-center gap-2.5 px-3 py-1.5 rounded-sm text-xs font-medium
+            border transition-all duration-200
+            ${
+              nivelConhecimento === 'iniciante'
+                ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
+                : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+            }
+          `}
+          title={nivelConhecimento === 'iniciante' ? 'Modo iniciante - explicacoes simplificadas' : 'Modo avancado - conteudo tecnico completo'}
+        >
+          {nivelConhecimento === 'iniciante' ? (
+            <>
+              <Student size={14} weight="duotone" className="text-green-600" />
+              <span className="hidden sm:inline">Sem Conhecimento</span>
+              <ToggleLeft size={16} weight="duotone" className="text-green-600" />
+            </>
+          ) : (
+            <>
+              <GraduationCap size={14} weight="duotone" className="text-gray-600" />
+              <span className="hidden sm:inline">Com Conhecimento</span>
+              <ToggleRight size={16} weight="duotone" className="text-gray-600" />
+            </>
+          )}
+        </button>
+
+        {/* Toggle simulacao vs modelo real */}
         <button
           onClick={() => onAlternarModo(!modoSimulacao)}
           className={`
