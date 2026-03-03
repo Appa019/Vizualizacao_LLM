@@ -28,5 +28,8 @@ htmlcov/
 # Build
 *.pyc
 
+# Worktrees
+.worktrees/
+
 # Misc
 CLAUDE.md
