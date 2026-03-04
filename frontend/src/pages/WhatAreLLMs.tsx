@@ -26,7 +26,7 @@ const timelineItems = [
     nome: 'Transformer',
     cor: '#ef4444',
     descricao:
-      '"Attention Is All You Need" (Vaswani et al.) introduziu self-attention, eliminando recorrencia. Cada token pode olhar para todos os outros em paralelo -- revolucionando NLP.',
+      '"Attention Is All You Need" (Vaswani et al.) introduziu self-attention, eliminando recorrencia. Cada token pode olhar para todos os outros em paralelo - revolucionando NLP.',
   },
   {
     ano: 2019,
@@ -47,7 +47,7 @@ const timelineItems = [
     nome: 'ChatGPT',
     cor: '#f59e0b',
     descricao:
-      'GPT-3.5 ajustado com RLHF para seguir instrucoes e dialogar. Atingiu 100M de usuarios em 2 meses -- o crescimento mais rapido da historia de produtos de consumo.',
+      'GPT-3.5 ajustado com RLHF para seguir instrucoes e dialogar. Atingiu 100M de usuarios em 2 meses - o crescimento mais rapido da historia de produtos de consumo.',
   },
   {
     ano: 2023,
@@ -81,7 +81,7 @@ export default function WhatAreLLMs() {
         </h2>
 
         <p className="text-gray-600 leading-relaxed max-w-2xl">
-          Grandes Modelos de Linguagem (LLMs -- <em>Large Language Models</em>)
+          Grandes Modelos de Linguagem (LLMs -<em>Large Language Models</em>)
           sao sistemas de inteligencia artificial treinados em enormes volumes
           de texto. Eles aprendem padroes estatisticos da linguagem humana e
           conseguem gerar, resumir, traduzir e raciocinar sobre texto com
@@ -96,7 +96,7 @@ export default function WhatAreLLMs() {
             icone: Scales,
             titulo: 'Escala massiva',
             descricao:
-              'Bilhoes de parametros treinados em trilhoes de tokens -- texto da internet, livros, codigo e muito mais.',
+              'Bilhoes de parametros treinados em trilhoes de tokens - texto da internet, livros, codigo e muito mais.',
             cor: 'text-blue-600',
           },
           {
@@ -110,7 +110,7 @@ export default function WhatAreLLMs() {
             icone: BookOpenText,
             titulo: 'Aprendizado por previsao',
             descricao:
-              'O objetivo de treinamento mais comum e prever o proximo token -- simples, mas incrivelmente poderoso.',
+              'O objetivo de treinamento mais comum e prever o proximo token - simples, mas incrivelmente poderoso.',
             cor: 'text-emerald-600',
           },
         ].map((item) => {
@@ -278,7 +278,7 @@ export default function WhatAreLLMs() {
             description:
               'Com escala (mais parametros + mais dados), surgem capacidades que nao foram explicitamente treinadas: raciocinio logico, traducao, resolucao de problemas matematicos, geracao de codigo.',
             whyItMatters:
-              'GPT-3 aprendeu a fazer aritmetica basica sem nunca ter sido treinado especificamente para isso -- so prevendo tokens.',
+              'GPT-3 aprendeu a fazer aritmetica basica sem nunca ter sido treinado especificamente para isso - so prevendo tokens.',
             content: (
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
@@ -406,7 +406,7 @@ export default function WhatAreLLMs() {
         <div>
           <p className="text-xs text-gray-500 mb-1">Proximo modulo</p>
           <p className="text-sm font-semibold text-gray-800">
-            Tokenizacao -- como o texto vira numeros
+            Tokenizacao - como o texto vira numeros
           </p>
         </div>
         <a href="/tokenization" className="btn-primary text-sm">

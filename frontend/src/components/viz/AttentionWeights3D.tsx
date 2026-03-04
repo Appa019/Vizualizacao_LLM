@@ -79,7 +79,6 @@ function TokenSphere({
         color={isHovered ? '#111827' : '#374151'}
         anchorX="center"
         anchorY="bottom"
-        font="/fonts/Inter-Medium.woff"
         outlineWidth={0.015}
         outlineColor="#ffffff"
       >

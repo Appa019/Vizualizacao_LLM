@@ -100,12 +100,20 @@ class EmbeddingSpaceRequest(BaseModel):
     )
 
 
+class EmbeddingSpacePoint(BaseModel):
+    """Ponto no espaço de embeddings 3D."""
+
+    word: str
+    position: list[float]
+    category: str
+
+
 class EmbeddingSpaceResponse(BaseModel):
     """Resposta com coordenadas 3D para visualização."""
 
-    tokens: list[str]
-    coordenadas_3d: list[list[float]]
+    pontos: list[EmbeddingSpacePoint]
     metodo: str
+    variancia_explicada: list[float] | None = None
     explicacao: str
 
 
@@ -204,6 +212,31 @@ async def embedding_space(
         embeddings_reais, method=body.metodo, n_components=3
     )
 
+    # Categorias semânticas para visualização
+    _categorias: dict[str, str] = {
+        "gato": "animal", "cachorro": "animal", "peixe": "animal",
+        "cavalo": "animal", "passaro": "animal", "rato": "animal",
+        "vaca": "animal", "leao": "animal", "tigre": "animal",
+        "vermelho": "cor", "azul": "cor", "verde": "cor",
+        "amarelo": "cor", "roxo": "cor", "laranja": "cor",
+        "preto": "cor", "branco": "cor", "rosa": "cor",
+        "correr": "verbo", "andar": "verbo", "nadar": "verbo",
+        "pular": "verbo", "voar": "verbo", "comer": "verbo",
+        "dormir": "verbo", "falar": "verbo", "pensar": "verbo",
+        "casa": "substantivo", "predio": "substantivo", "escola": "substantivo",
+        "cidade": "substantivo", "rua": "substantivo", "mesa": "substantivo",
+        "carro": "substantivo", "livro": "substantivo", "porta": "substantivo",
+    }
+
+    pontos = [
+        EmbeddingSpacePoint(
+            word=token,
+            position=coordenadas[i],
+            category=_categorias.get(token.lower(), "default"),
+        )
+        for i, token in enumerate(tokens_reais)
+    ]
+
     descricao_metodo = (
         "PCA (Análise de Componentes Principais): redução linear que preserva "
         "a maior variância dos dados. Rápido e determinístico."
@@ -213,8 +246,7 @@ async def embedding_space(
     )
 
     return EmbeddingSpaceResponse(
-        tokens=tokens_reais,
-        coordenadas_3d=coordenadas,
+        pontos=pontos,
         metodo=body.metodo,
         explicacao=(
             f"Embeddings de {body.d_model} dimensões reduzidos a 3D usando {body.metodo.upper()}. "

@@ -1,7 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/layout/Layout'
-
-// ─── Páginas ──────────────────────────────────────────────────────────────────
 import Home from './pages/Home'
 import WhatAreLLMs from './pages/WhatAreLLMs'
 import Tokenization from './pages/Tokenization'
@@ -12,12 +10,12 @@ import Training from './pages/Training'
 import Inference from './pages/Inference'
 import FineTuning from './pages/FineTuning'
 import Lab from './pages/Lab'
-
-// ─── App raiz com roteamento ──────────────────────────────────────────────────
+import LandingPage from './pages/LandingPage'
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/home" element={<LandingPage />} />
       <Route element={<Layout />}>
         <Route index path="/" element={<Home />} />
         <Route path="/what-are-llms" element={<WhatAreLLMs />} />

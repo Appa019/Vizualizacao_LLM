@@ -115,15 +115,15 @@ export default function Embeddings() {
 
       {/* Input */}
       <section className="glass-card p-5">
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
+        <label className="text-sm font-medium text-gray-700 mb-1 block">
           Texto de entrada
         </label>
+        <p className="text-[11px] text-gray-400 mb-2">Exemplo fixo para demonstracao</p>
         <input
           type="text"
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          className="w-full bg-white border border-gray-300 rounded-sm px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
-          placeholder="Digite uma frase..."
+          readOnly
+          className="w-full bg-gray-50 border border-gray-200 rounded-sm px-4 py-2.5 text-sm text-gray-900 cursor-default"
         />
       </section>
 
@@ -132,7 +132,7 @@ export default function Embeddings() {
 
       {/* Formula KaTeX */}
       <FormulaBlock
-        formula="PE_{(pos, 2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)"
+        formula={"PE_{(pos, 2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{model}}}\\right)"}
         variables={[
           { symbol: 'pos', color: '#a855f7', label: 'Posicao', description: 'Posicao do token na sequencia (0, 1, 2, ...)' },
           { symbol: 'i', color: '#3b82f6', label: 'Dimensao', description: 'Indice da dimensao do embedding' },
@@ -170,6 +170,21 @@ export default function Embeddings() {
           >
             <EmbeddingSpace points={spacePoints} height={450} />
           </ApiLoadingState>
+
+          {/* Legenda de categorias */}
+          <div className="flex flex-wrap gap-4 pt-2">
+            {[
+              { cat: 'animal', color: 'bg-green-500', label: 'Animal' },
+              { cat: 'cor', color: 'bg-violet-500', label: 'Cor' },
+              { cat: 'verbo', color: 'bg-blue-500', label: 'Verbo' },
+              { cat: 'substantivo', color: 'bg-orange-500', label: 'Substantivo' },
+            ].map((item) => (
+              <div key={item.cat} className="flex items-center gap-1.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
+                <span className="text-[11px] text-gray-600">{item.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </EducationalViz>
 

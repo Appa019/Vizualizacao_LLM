@@ -47,11 +47,13 @@ export default function FormulaBlock({
       return katex.renderToString(coloredFormula, {
         throwOnError: false,
         displayMode: true,
+        strict: false,
       })
     } catch {
       return katex.renderToString(formula, {
         throwOnError: false,
         displayMode: true,
+        strict: false,
       })
     }
   }

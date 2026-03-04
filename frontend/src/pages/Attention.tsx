@@ -131,15 +131,15 @@ export default function Attention() {
 
       {/* Input de texto */}
       <section className="glass-card p-5">
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
+        <label className="text-sm font-medium text-gray-700 mb-1 block">
           Texto de entrada
         </label>
+        <p className="text-[11px] text-gray-400 mb-2">Exemplo fixo para demonstracao - clique nos tokens abaixo para explorar conexoes</p>
         <input
           type="text"
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          className="w-full bg-white border border-gray-300 rounded-sm px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500/50 transition-colors"
-          placeholder="Digite uma frase para analisar..."
+          readOnly
+          className="w-full bg-gray-50 border border-gray-200 rounded-sm px-4 py-2.5 text-sm text-gray-900 cursor-default"
         />
         <div className="flex flex-wrap gap-1.5 mt-3">
           {displayTokens.map((token, i) => (
@@ -171,7 +171,7 @@ export default function Attention() {
       {/* Formula KaTeX */}
       <section>
         <FormulaBlock
-          formula="\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V"
+          formula={"\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V"}
           variables={attentionVars}
           size="lg"
         />
@@ -199,7 +199,28 @@ export default function Attention() {
         }
       >
         <div className="space-y-3">
-          <div className="flex items-center justify-end gap-3">
+          {/* Explicacao de leitura */}
+          <div className="bg-gray-50 border border-gray-200 rounded-sm px-4 py-2.5">
+            <p className="text-xs text-gray-600">
+              <span className="font-medium text-gray-700">Como ler:</span> cada celula mostra quanto o token da <span className="font-medium">linha</span> presta
+              atencao ao token da <span className="font-medium">coluna</span>. Valores proximos a 1.0 indicam alta atencao.
+            </p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-yellow-100 border border-yellow-300" />
+                <span className="text-[10px] text-gray-500">Baixa</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-orange-400" />
+                <span className="text-[10px] text-gray-500">Media</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-sm bg-red-600" />
+                <span className="text-[10px] text-gray-500">Alta</span>
+              </div>
+            </div>
             <Toggle
               enabled={modo3D}
               onChange={setModo3D}

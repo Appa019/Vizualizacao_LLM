@@ -41,7 +41,7 @@ export default function FineTuning() {
       {/* LoRA Visualization */}
       <section className="glass-card p-6 space-y-5">
         <h3 className="text-sm font-semibold text-gray-800">
-          LoRA: Low-Rank Adaptation -- Visualizacao
+          LoRA: Low-Rank Adaptation - Visualizacao
         </h3>
 
         <Slider
@@ -372,7 +372,7 @@ export default function FineTuning() {
           Objetivo RLHF
         </h3>
         <FormulaBlock
-          formula="\\max_{\\pi} \\mathbb{E}_{x \\sim D}\\left[ R(x, y) - \\beta \\cdot KL(\\pi \\| \\pi_{ref}) \\right]"
+          formula={"\\max_{\\pi} \\mathbb{E}_{x \\sim D}\\left[ R(x, y) - \\beta \\cdot KL(\\pi \\| \\pi_{ref}) \\right]"}
           variables={[
             {
               symbol: 'R',
@@ -510,7 +510,7 @@ export default function FineTuning() {
             {
               quando: 'Dominio especializado',
               exemplo:
-                'Medicina, direito, financas -- vocabulario e padroes unicos',
+                'Medicina, direito, financas - vocabulario e padroes unicos',
             },
             {
               quando: 'Formato de saida',
@@ -554,7 +554,7 @@ export default function FineTuning() {
             Isso significa que um medico pode criar um assistente de
             triagem, um advogado pode treinar um modelo para analise de
             contratos, e uma startup pode ter seu proprio modelo de
-            atendimento -- tudo com custos acessiveis e dados proprietarios
+            atendimento - tudo com custos acessiveis e dados proprietarios
             que nunca saem da organizacao.
           </p>
           <p>

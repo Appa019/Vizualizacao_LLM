@@ -116,10 +116,10 @@ export function useTokenize() {
 
 export function useBPESteps() {
   return useApiCall<BPEStepsResponse, { texto: string; num_merges?: number }>(
-    async (params) => {
+    async ({ texto, num_merges }) => {
       const res = await apiClient.post<BPEStepsResponse>(
         '/api/tokenization/bpe-steps',
-        params
+        { textos: [texto], num_mesclagens: num_merges ?? 10 }
       )
       return res.data
     }

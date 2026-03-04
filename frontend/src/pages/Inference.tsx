@@ -157,7 +157,7 @@ export default function Inference() {
 
       {/* Formula da temperatura */}
       <FormulaBlock
-        formula="p_i = \\frac{e^{z_i/T}}{\\sum_j e^{z_j/T}}"
+        formula={"p_i = \\frac{e^{z_i/T}}{\\sum_j e^{z_j/T}}"}
         variables={[
           { symbol: 'p_i', color: '#22d3ee', label: 'Probabilidade', description: 'Probabilidade ajustada do token i' },
           { symbol: 'z_i', color: '#3b82f6', label: 'Logit', description: 'Logit bruto do token i antes do softmax' },
@@ -175,15 +175,15 @@ export default function Inference() {
         <div className="space-y-4">
           {/* Input do prompt */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               Prompt de entrada
             </label>
+            <p className="text-[11px] text-gray-400 mb-2">Exemplo fixo para demonstracao</p>
             <input
               type="text"
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-sm px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-cyan-500/50 transition-colors"
-              placeholder="Digite tokens separados por espaco..."
+              readOnly
+              className="w-full bg-gray-50 border border-gray-200 rounded-sm px-4 py-2.5 text-sm text-gray-900 cursor-default"
             />
           </div>
 

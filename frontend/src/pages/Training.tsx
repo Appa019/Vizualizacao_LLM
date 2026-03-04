@@ -178,7 +178,7 @@ export default function Training() {
       </section>
 
       <FormulaBlock
-        formula="\\mathcal{L} = -\\sum_{i=1}^{V} y_i \\log(\\hat{y}_i)"
+        formula={"\\mathcal{L} = -\\sum_{i=1}^{V} y_i \\log(\\hat{y}_i)"}
         variables={[
           { symbol: '\\mathcal{L}', color: '#ef4444', label: 'Loss', description: 'Funcao de custo - queremos minimizar' },
           { symbol: 'y_i', color: '#22c55e', label: 'Alvo', description: 'Distribuicao alvo (one-hot do token correto)' },

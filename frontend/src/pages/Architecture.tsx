@@ -330,7 +330,7 @@ export default function Architecture() {
         <div className="space-y-3">
           <p>
             Antes do Transformer, modelos de linguagem usavam RNNs e LSTMs que
-            processavam tokens sequencialmente -- cada token dependia do
+            processavam tokens sequencialmente - cada token dependia do
             anterior. Isso criava dois problemas graves: treinamento lento
             (impossivel paralelizar) e perda de informacao em sequencias longas.
           </p>

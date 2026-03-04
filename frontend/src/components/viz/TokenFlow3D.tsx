@@ -59,7 +59,7 @@ function LayerBox({
         color={color}
         anchorX="left"
         anchorY="middle"
-        font="/fonts/Inter-Medium.woff"
+
         outlineWidth={0.015}
         outlineColor="#ffffff"
       >
@@ -189,7 +189,7 @@ function TokenLabel({
         color="#374151"
         anchorX="center"
         anchorY="bottom"
-        font="/fonts/Inter-Medium.woff"
+
         outlineWidth={0.015}
         outlineColor="#ffffff"
       >

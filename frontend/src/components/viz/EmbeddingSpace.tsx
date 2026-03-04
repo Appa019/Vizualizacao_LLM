@@ -65,7 +65,6 @@ function Point({ point, isHovered, onHover }: {
         color={isHovered ? '#111827' : '#6b7280'}
         anchorX="center"
         anchorY="bottom"
-        font="/fonts/Inter-Medium.woff"
         outlineWidth={0.02}
         outlineColor="#ffffff"
       >

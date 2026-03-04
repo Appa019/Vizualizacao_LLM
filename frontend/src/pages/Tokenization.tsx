@@ -23,7 +23,6 @@ const CORES_TOKENS = [
 // ─── Dados fallback quando o backend esta offline ────────────────────────────
 
 const FALLBACK_TOKENS = ['O', 'gato', 'dorm', 'iu', 'no', 'tap', 'ete']
-const FALLBACK_IDS = [46, 28193, 12876, 2178, 694, 8906, 3084]
 
 const FALLBACK_BPE_STEPS = [
   { passo: 1, par: ['t', 'a'] as [string, string], frequencia: 3, tokens_atuais: ['O', ' ', 'g', 'a', 't', 'o', ' ', 'd', 'o', 'r', 'm', 'i', 'u', ' ', 'n', 'o', ' ', 'ta', 'p', 'e', 't', 'e'], vocabulario_tamanho: 21 },
@@ -56,23 +55,22 @@ export default function Tokenization() {
 
   // Dados para exibicao
   const tokens = tokenize.data?.tokens ?? FALLBACK_TOKENS
-  const ids = tokenize.data?.ids ?? FALLBACK_IDS
-  const contagem = tokenize.data?.contagem ?? tokens.length
+  const contagem = tokenize.data?.num_tokens ?? tokens.length
 
   // BPE Steps para o StepByStep
   const bpeData = bpeSteps.data
   const bpeStepItems = bpeData
     ? bpeData.passos.map((passo) => ({
-        title: `Passo ${passo.passo}: Fundir "${passo.par[0]}" + "${passo.par[1]}"`,
-        description: `Par mais frequente com ${passo.frequencia} ocorrencia(s). Vocabulario: ${passo.vocabulario_tamanho} tokens.`,
+        title: `Passo ${passo.passo}: Fundir "${passo.par_mesclado[0]}" + "${passo.par_mesclado[1]}"`,
+        description: `Par mais frequente com ${passo.frequencia} ocorrencia(s). Vocabulario: ${passo.tamanho_vocabulario} tokens. Novo token: "${passo.novo_token}".`,
         content: (
           <div className="space-y-2">
             <div className="flex flex-wrap gap-1">
-              {passo.tokens_atuais.map((t, i) => (
+              {passo.amostra_corpus.flat().map((t, i) => (
                 <span
                   key={i}
                   className={`px-1.5 py-0.5 rounded border text-[11px] font-mono ${
-                    t === passo.par.join('')
+                    t === passo.novo_token
                       ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
                       : 'bg-gray-100 border-gray-200 text-gray-600'
                   }`}
@@ -102,7 +100,7 @@ export default function Tokenization() {
       }))
 
   // Dados do comparador
-  const compareData = compareTokenizers.data?.abordagens ?? FALLBACK_COMPARE
+  const compareData = compareTokenizers.data?.comparacao ?? FALLBACK_COMPARE
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-10 animate-slide-up">
@@ -124,7 +122,7 @@ export default function Tokenization() {
 
       {/* Formula BPE */}
       <FormulaBlock
-        formula="\\text{merge}(t_a, t_b) \\to t_{ab} \\quad \\text{onde} \\quad (t_a, t_b) = \\arg\\max_{(x,y)} \\text{freq}(x, y)"
+        formula={"\\text{merge}(t_a, t_b) \\to t_{ab} \\quad \\text{onde} \\quad (t_a, t_b) = \\arg\\max_{(x,y)} \\text{freq}(x, y)"}
         variables={[
           { symbol: 't_a', color: '#3b82f6', label: 'Token A', description: 'Primeiro token do par mais frequente' },
           { symbol: 't_b', color: '#22c55e', label: 'Token B', description: 'Segundo token do par mais frequente' },
@@ -142,15 +140,15 @@ export default function Tokenization() {
         <div className="space-y-4">
           {/* Campo de entrada */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               Texto de entrada
             </label>
+            <p className="text-[11px] text-gray-400 mb-2">Exemplo fixo para demonstracao</p>
             <textarea
               value={entrada}
-              onChange={(e) => setEntrada(e.target.value)}
-              placeholder="Digite qualquer texto para tokenizar..."
+              readOnly
               rows={3}
-              className="w-full bg-white border border-gray-300 rounded-sm px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 transition-colors font-mono resize-none"
+              className="w-full bg-gray-50 border border-gray-200 rounded-sm px-4 py-2.5 text-sm text-gray-900 font-mono resize-none cursor-default"
             />
           </div>
 
@@ -196,26 +194,22 @@ export default function Tokenization() {
             </div>
           </ApiLoadingState>
 
-          {/* Tabela Token -> ID */}
+          {/* Tabela Token -> Indice */}
           {tokens.length > 0 && (
             <div className="border border-gray-200 rounded-sm overflow-hidden">
-              <div className="grid grid-cols-3 bg-gray-50 px-4 py-2 border-b border-gray-200">
+              <div className="grid grid-cols-2 bg-gray-50 px-4 py-2 border-b border-gray-200">
                 <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Indice</span>
                 <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Token</span>
-                <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">ID</span>
               </div>
               <div className="max-h-48 overflow-y-auto">
                 {tokens.slice(0, 20).map((t, i) => (
                   <div
                     key={i}
-                    className="grid grid-cols-3 px-4 py-2 border-b border-gray-200 last:border-0 hover:bg-gray-50 transition-colors"
+                    className="grid grid-cols-2 px-4 py-2 border-b border-gray-200 last:border-0 hover:bg-gray-50 transition-colors"
                   >
                     <span className="text-xs font-mono text-gray-400 tabular-nums">{i}</span>
                     <span className={`text-xs font-mono ${CORES_TOKENS[i % CORES_TOKENS.length].split(' ')[1]}`}>
                       "{t === ' ' ? '\u00B7' : t}"
-                    </span>
-                    <span className="text-xs font-mono text-gray-600 tabular-nums">
-                      {ids[i] ?? '-'}
                     </span>
                   </div>
                 ))}
@@ -224,6 +218,21 @@ export default function Tokenization() {
           )}
         </div>
       </EducationalViz>
+
+      {/* Por que subpalavras? */}
+      <section className="glass-card p-5">
+        <h4 className="text-sm font-semibold text-gray-800 mb-2">Por que subpalavras?</h4>
+        <p className="text-xs text-gray-600 leading-relaxed">
+          Se usassemos palavras inteiras, o vocabulario precisaria conter todas as palavras
+          possiveis - incluindo conjugacoes, plurais e neologismos. Isso e inviavel. Se usassemos
+          caracteres, cada token teria pouca informacao semantica e as sequencias ficariam muito longas.
+        </p>
+        <p className="text-xs text-gray-600 leading-relaxed mt-2">
+          Subpalavras (como BPE) sao o meio-termo ideal: um vocabulario compacto (~32k-100k tokens)
+          que consegue representar qualquer texto, mantendo palavras comuns inteiras e dividindo
+          palavras raras em pedacos reconheciveis.
+        </p>
+      </section>
 
       {/* BPE animado */}
       <div className="space-y-3">
@@ -248,19 +257,15 @@ export default function Tokenization() {
           )}
         </ApiLoadingState>
 
-        {bpeData && (
-          <div className="grid grid-cols-3 gap-3">
+        {bpeData && bpeData.passos.length > 0 && (
+          <div className="grid grid-cols-2 gap-3">
             <div className="text-center p-3 rounded-sm bg-gray-100">
-              <p className="text-xs text-gray-500">Tokens iniciais</p>
-              <p className="text-lg font-mono text-red-600">{bpeData.estatisticas.tokens_iniciais}</p>
+              <p className="text-xs text-gray-500">Mesclagens realizadas</p>
+              <p className="text-lg font-mono text-blue-600">{bpeData.num_passos}</p>
             </div>
             <div className="text-center p-3 rounded-sm bg-gray-100">
-              <p className="text-xs text-gray-500">Tokens finais</p>
-              <p className="text-lg font-mono text-green-600">{bpeData.estatisticas.tokens_finais}</p>
-            </div>
-            <div className="text-center p-3 rounded-sm bg-gray-100">
-              <p className="text-xs text-gray-500">Reducao</p>
-              <p className="text-lg font-mono text-blue-600">{bpeData.estatisticas.reducao_percentual.toFixed(0)}%</p>
+              <p className="text-xs text-gray-500">Vocabulario final</p>
+              <p className="text-lg font-mono text-green-600">{bpeData.passos[bpeData.passos.length - 1].tamanho_vocabulario}</p>
             </div>
           </div>
         )}
@@ -297,15 +302,15 @@ export default function Tokenization() {
           }
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {compareData.map((abordagem) => (
-              <div key={abordagem.nome} className="glass-card p-4 space-y-3">
+            {compareData.map((item) => (
+              <div key={'abordagem' in item ? item.abordagem : item.nome} className="glass-card p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-emerald-600">{abordagem.nome}</h4>
-                  <span className="text-xs font-mono text-gray-500">{abordagem.num_tokens} tokens</span>
+                  <h4 className="text-sm font-semibold text-emerald-600">{'abordagem' in item ? item.abordagem : item.nome}</h4>
+                  <span className="text-xs font-mono text-gray-500">{item.num_tokens} tokens</span>
                 </div>
-                <p className="text-[11px] text-gray-500">{abordagem.descricao}</p>
+                <p className="text-[11px] text-gray-500">{item.descricao}</p>
                 <div className="flex flex-wrap gap-1">
-                  {abordagem.tokens.map((t, i) => (
+                  {item.tokens.map((t, i) => (
                     <span key={i} className={`px-1.5 py-0.5 rounded border text-[11px] font-mono ${CORES_TOKENS[i % CORES_TOKENS.length]}`}>
                       {t === ' ' ? '\u00B7' : t}
                     </span>

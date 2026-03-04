@@ -18,25 +18,31 @@ Plataforma interativa para aprender **tudo** sobre Large Language Models: do tre
 
 ## Stack
 
-- **Backend**: Python 3.11+, FastAPI, NumPy, SciPy, scikit-learn, HuggingFace Transformers, PyTorch
+- **Backend**: Python 3.11+, FastAPI, NumPy, SciPy, scikit-learn
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Three.js (R3F), Plotly.js, KaTeX, Framer Motion
 
 ## Quick Start
 
 ```bash
-# Tudo de uma vez
+# Tudo de uma vez (cria venv, instala deps, inicia ambos os servidores)
+git clone https://github.com/Appa019/Vizualizacao_LLM.git
+cd Vizualizacao_LLM
 ./start.sh
+```
 
-# Ou separadamente:
+Ou separadamente:
 
+```bash
 # Backend
 cd backend
-source ../.venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 
 # Frontend
 cd frontend
-npm install   # primeira vez
+npm install
 npm run dev
 ```
 
@@ -50,7 +56,7 @@ Acesse:
 backend/
   main.py           # FastAPI + CORS + routers
   core/             # Logica de dominio (simulador, trainer, gerador)
-  routers/          # Endpoints REST (tokenization, embeddings, attention, training, inference, models)
+  routers/          # Endpoints REST (tokenization, embeddings, attention, training, inference)
   utils/            # Tokenizador, math helpers
 frontend/
   src/

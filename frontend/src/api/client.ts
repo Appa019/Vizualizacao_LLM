@@ -48,8 +48,9 @@ export interface TokenizationRequest {
 
 export interface TokenizationResponse {
   tokens: string[]
-  ids: number[]
-  contagem: number
+  num_tokens: number
+  texto_original: string
+  estatisticas: Record<string, unknown>
 }
 
 export interface BPEStepsRequest {
@@ -59,32 +60,33 @@ export interface BPEStepsRequest {
 
 export interface BPEStep {
   passo: number
-  par: [string, string]
+  par_mesclado: string[]
+  novo_token: string
   frequencia: number
-  tokens_atuais: string[]
-  vocabulario_tamanho: number
+  tamanho_vocabulario: number
+  amostra_corpus: string[][]
 }
 
 export interface BPEStepsResponse {
-  texto_original: string
-  tokens_iniciais: string[]
   passos: BPEStep[]
-  tokens_finais: string[]
-  estatisticas: {
-    tokens_iniciais: number
-    tokens_finais: number
-    reducao_percentual: number
-  }
+  num_passos: number
+  explicacao: string
+}
+
+export interface CompareTokenizersComparacao {
+  abordagem: string
+  tokens: string[]
+  num_tokens: number
+  descricao: string
+  vantagem: string
+  desvantagem: string
 }
 
 export interface CompareTokenizersResponse {
   texto: string
-  abordagens: {
-    nome: string
-    tokens: string[]
-    num_tokens: number
-    descricao: string
-  }[]
+  abordagens: Record<string, string[]>
+  comparacao: CompareTokenizersComparacao[]
+  explicacao: string
 }
 
 // ─── Embeddings ─────────────────────────────────────────────────────────────
