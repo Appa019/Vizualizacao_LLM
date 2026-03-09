@@ -1,4 +1,6 @@
 # LLM Explorer — Plataforma Educacional de Transformers
+**Link da Landing:https://frontend-sepia-six-41.vercel.app/**
+
 
 Plataforma interativa para aprender **tudo** sobre Large Language Models: do treinamento a inferencia, com visualizacoes 3D, formulas matematicas e explicacoes passo a passo.
 
